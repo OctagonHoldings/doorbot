@@ -1,9 +1,13 @@
 doorbot
 =======
 
-This repo will eventually be the door robot that controls physical access to Ardent West.
+This repo will eventually be the door robot that controls physical access to our home.
 
-Right now, it only contains `mifare-desfire-clipper-id.c`
+# guardian.c
+This is the current prototype code for controlling door access
 
-# mifare-desfire-clipper-id.c
-As the name implies, this returns the Clipper ID if the card you're trying to scan is a Clipper Card. If the card you are tryign to scan is not a Clipper Card, you get nothing and like it.
+# report_tag.c
+This returns the ID of the tag, which you will want to know to add to the access file.
+
+# determine_tag_type.c
+This returns the type of tag being scanned.  We only support ISO14443-A tags in our current code, but could in theory support others.  If a new NFC tag comes up, this program will be able to determine whether or not it's a type we support in our code.  If it comes up as type 1, we should already support it.  If it comes up as another type, we don't currently support it, but could in theory.  If it doesn't come up, we might be able to support it, but aren't currently able to scan it well enough to know.
