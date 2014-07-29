@@ -43,13 +43,13 @@ int main()
             mifare_desfire_select_application(clipper[0], aids[0]);
             mifare_desfire_read_data(clipper[0], 8, 1, 4, &clipper_id);
             clipper_id = ntohl(clipper_id);
-            printf("Clipper card id: %d\n", clipper_id);
+            printf("c%d\n", clipper_id);
             free(aids);
             freefare_free_tags(clipper);
         }
         else
         {
-            printf("Tag UID: 0x");
+            printf("0x");
             for(i = 0;i < target.nti.nai.szUidLen;i++)
                 printf("%0x", target.nti.nai.abtUid[i]);
             printf("\n");
