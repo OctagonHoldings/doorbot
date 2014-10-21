@@ -21,3 +21,5 @@
 *.i*86
 *.x86_64
 *.hex
+./doorface/report_tag
+./doorface/determine_tag_type
