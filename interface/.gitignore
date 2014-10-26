@@ -1,5 +1,4 @@
 # from https://github.com/anynines/ruby-sinatra-example-app/blob/master/.gitignore
-
 *.rbc
 *.sassc
 .sass-cache
@@ -23,7 +22,6 @@ pickle-email-*.html
 .LSOverride
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -33,3 +31,4 @@ Icon
 
 # Doorbot-specific stuff
 doorbot.db
+.env

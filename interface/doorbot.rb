@@ -2,6 +2,10 @@ require 'sinatra'
 require 'haml'
 require 'data_mapper'
 require 'dm-sqlite-adapter'
+require 'dotenv'
+require 'pry'
+
+Dotenv.load
 
 DataMapper::Logger.new($stdout, :debug)
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/doorbot.db")
@@ -27,7 +31,7 @@ helpers do
 
   def authorized?
     @auth ||=  Rack::Auth::Basic::Request.new(request.env)
-    @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == ['admin', '0rbit']
+    @auth.provided? and @auth.basic? and @auth.credentials and @auth.credentials == [ENV['DOORBOT_ADMIN_USER'], ENV['DOORBOT_ADMIN_PASSWORD']]
   end
 end
 
