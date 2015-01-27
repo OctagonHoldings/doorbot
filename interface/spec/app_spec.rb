@@ -20,7 +20,7 @@ describe "Doorbot" do
     end
 
     it 'does not allow access to /admin/list without a password' do
-      get '/admin'
+      get '/admin/list'
       expect(last_response.status).to eq 401
       expect(last_response.header['WWW-Authenticate']).to eq 'Basic realm="Restricted Area"'
     end
@@ -44,7 +44,7 @@ describe "Doorbot" do
     end
 
     it 'allows access to /admin/list' do
-      get '/admin', {}, rack_env
+      get '/admin/list', {}, rack_env
       expect(last_response).to be_ok
     end
 
