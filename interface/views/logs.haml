@@ -1,0 +1,20 @@
+%h1.uk-heading-large
+	Logs!
+
+%table.uk-table.uk-text-left
+	%thead
+		%tr
+			%th Time
+			%th Type
+			%th Number
+			%th Name
+			%th Door Opened?
+	%tbody
+		- @tags.each do |tag|
+			%tr
+				%td= tag.created_at.strftime("%b %-d, %Y - %H:%M:%S") if tag.created_at
+				%td= tag.card_type
+				%td= tag.card_number
+				%td= tag.name
+				%td= tag.door_opened ? 'Yes' : 'No'
+

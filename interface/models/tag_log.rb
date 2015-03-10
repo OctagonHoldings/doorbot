@@ -5,5 +5,5 @@ class TagLog
   property :card_number, String, index: true
   property :name,        String, index: true
   property :created_at,  DateTime, index: true
-  property :action,      String
+  property :door_opened, Boolean
 end

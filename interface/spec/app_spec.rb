@@ -24,6 +24,12 @@ describe "Doorbot" do
       expect(last_response.status).to eq 401
       expect(last_response.header['WWW-Authenticate']).to eq 'Basic realm="Restricted Area"'
     end
+
+    it 'does not allow access to /admin/logs without a password' do
+      get '/admin/logs'
+      expect(last_response.status).to eq 401
+      expect(last_response.header['WWW-Authenticate']).to eq 'Basic realm="Restricted Area"'
+    end
   end
 
   context 'when logged in as an admin' do
@@ -46,6 +52,14 @@ describe "Doorbot" do
     it 'allows access to /admin/list' do
       get '/admin/list', {}, rack_env
       expect(last_response).to be_ok
+    end
+
+    it 'allows access to /admin/logs' do
+      get '/admin/logs', {}, rack_env
+      expect(last_response).to be_ok
+    end
+
+    it 'shows tag logs on /admin/logs' do
     end
 
   end

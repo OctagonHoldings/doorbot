@@ -56,3 +56,10 @@ get '/admin/list' do
   protected!
   haml :list, :format => :html5
 end
+
+get '/admin/logs' do
+  protected!
+  @tags = TagLog.all(:order => [:created_at.desc])
+  haml :logs, :format => :html5
+end
+
