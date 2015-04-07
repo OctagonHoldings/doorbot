@@ -1,0 +1,23 @@
+- method = @authorization.created_at ? :put : :post
+%form.uk-form{action: '/admin/authorizations', method: method}
+  .uk-form-row
+    %input{type: 'text', name: 'authorization[name]', placeholder: 'Name'}
+
+  .uk-form-row
+    %input{type: 'text', name: 'authorization[card_type]', placeholder: 'Card type'}
+
+  .uk-form-row
+    %input{type: 'text', name: 'authorization[card_number]', disabled: true}
+
+  .uk-form-row
+    %input{type: 'date', name: 'authorization[expires_at]'}
+
+  .uk-form-row
+    %label
+      %input{type: 'checkbox', name: 'authorization[active]'}
+      Active?
+
+
+
+  .ul-form-row
+    %input.uk-button.uk-button-primary.uk-button-large{type: 'submit', value: @authorization.created_at ? 'Update' : 'Create'}

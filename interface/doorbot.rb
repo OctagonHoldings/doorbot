@@ -63,3 +63,14 @@ get '/admin/logs' do
   haml :logs, :format => :html5
 end
 
+get '/admin/authorizations/new' do
+  protected!
+  @authorization = DoorAuthorization.new(params[:authorization] || {})
+  haml :authorization_form, :format => :html5
+end
+
+post '/admin/authorizations' do
+  protected!
+  @authorization = DoorAuthorization.create(params[:authorization])
+end
+

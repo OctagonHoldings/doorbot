@@ -9,6 +9,7 @@
 			%th Number
 			%th Name
 			%th Door Opened?
+			%th
 	%tbody
 		- @tags.each do |tag|
 			%tr
@@ -17,4 +18,7 @@
 				%td= tag.card_number
 				%td= tag.name
 				%td= tag.door_opened ? 'Yes' : 'No'
-
+				%td
+					- unless tag.door_opened?
+						%a.uk-button.uk-button-primary
+							Add
