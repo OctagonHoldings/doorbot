@@ -8,3 +8,5 @@ gem 'dotenv'
 # dev
 gem 'rspec'
 gem 'pry'
+gem 'dm-sweatshop'
+gem 'ffaker'
