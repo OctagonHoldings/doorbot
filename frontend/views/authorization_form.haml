@@ -1,23 +1,31 @@
-- method = @authorization.created_at ? :put : :post
-%form.uk-form{action: '/admin/authorizations', method: method}
-  .uk-form-row
-    %input{type: 'text', name: 'authorization[name]', placeholder: 'Name'}
+%form.uk-form.uk-form-horizontal{action: '/admin/authorizations', method: :post}
+  %input{type: 'hidden', name: 'id', value: @authorization[:id]}
 
   .uk-form-row
-    %input{type: 'text', name: 'authorization[card_type]', placeholder: 'Card type'}
+    %label.uk-form-label Name
+    .uk-form-controls
+      %input{type: 'text', name: 'authorization[name]', placeholder: 'Name', value: @authorization[:name]}
 
   .uk-form-row
-    %input{type: 'text', name: 'authorization[card_number]', disabled: true}
+    %label.uk-form-label Card type
+    .uk-form-controls
+      %input{type: 'text', name: 'authorization[card_type]', placeholder: 'Card type', value: @authorization[:card_type]}
 
   .uk-form-row
-    %input{type: 'date', name: 'authorization[expires_at]'}
+    %label.uk-form-label Card number
+    .uk-form-controls
+      %input{type: 'text', name: 'authorization[card_number]', value: @authorization[:card_number]}
+
+  .uk-form-row
+    %label.uk-form-label Expires
+    .uk-form-controls
+      %input{type: 'date', name: 'authorization[expires_at]', value: @authorization[:expires_at]}
 
   .uk-form-row
     %label
-      %input{type: 'checkbox', name: 'authorization[active]'}
+      %input{type: 'checkbox', name: 'authorization[active]', checked: @authorization[:active] ? 'checked' : nil}
       Active?
 
-
-
   .ul-form-row
-    %input.uk-button.uk-button-primary.uk-button-large{type: 'submit', value: @authorization.created_at ? 'Update' : 'Create'}
+    %input.uk-button.uk-button-primary.uk-button-large{type: 'submit', value: @authorization.id ? 'Update' : 'Create'}
+

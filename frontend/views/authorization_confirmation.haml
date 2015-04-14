@@ -1,0 +1,8 @@
+- if @authorization.saved?
+  %p Authorization created/updated
+- else
+  Failed.
+  %ul
+    - @authorization.errors.each do |error|
+      %li
+        = error.join(',')

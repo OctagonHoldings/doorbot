@@ -36,37 +36,60 @@ helpers do
 end
 
 get '/' do
-  haml :index, :format => :html5
+  haml :index, format: :html5
 end
 
 get '/potatoes' do
-  haml :potatoes, :format => :html5
+  haml :potatoes, format: :html5
 end
 
 get '/admin' do
   protected!
-  haml :admin, :format => :html5
+  haml :admin, format: :html5
 end
 
 get '/admin/list' do
   protected!
   @authorizations = DoorAuthorization.all(:order => [:name.asc])
-  haml :list, :format => :html5
+  haml :list, format: :html5
 end
 
 get '/admin/logs' do
   protected!
   @tags = TagLog.all(:order => [:created_at.desc])
-  haml :logs, :format => :html5
+  haml :logs, format: :html5
 end
 
 get '/admin/new' do
   protected!
-  @authorization = DoorAuthorization.new(params[:authorization] || {})
-  haml :authorization_form, :format => :html5
+  if params[:from_tag]
+    tag = TagLog.get(params[:from_tag])
+    @authorization = DoorAuthorization.first(card_number: tag.card_number)
+
+    auth_data = {
+      name: tag.name,
+      card_type: tag.card_type,
+      card_number: tag.card_number
+    }
+  elsif params[:authorization]
+    auth_data = params[:authorization]
+  else
+    auth_data = {}
+  end
+  @authorization ||= DoorAuthorization.new(auth_data)
+  haml :authorization_form, format: :html5
 end
 
 post '/admin/authorizations' do
   protected!
-  @authorization = DoorAuthorization.create(params[:authorization])
+  auth_data = params[:authorization]
+  auth_data[:active] = auth_data[:active] == 'on' ? true : false
+  auth_data[:expires_at] = auth_data[:expires_at] == '' ? nil : Date.parse(auth_data[:expires_at])
+  if params[:id]
+    @authorization = DoorAuthorization.first(id: params[:id])
+    @authorization.update(auth_data)
+  else
+    @authorization = DoorAuthorization.create(auth_data)
+  end
+  haml :authorization_confirmation, format: :html5
 end
