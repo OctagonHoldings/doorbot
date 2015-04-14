@@ -50,6 +50,7 @@ end
 
 get '/admin/list' do
   protected!
+  @authorizations = DoorAuthorization.all(:order => [:name.asc])
   haml :list, :format => :html5
 end
 
@@ -59,7 +60,7 @@ get '/admin/logs' do
   haml :logs, :format => :html5
 end
 
-get '/admin/authorizations/new' do
+get '/admin/new' do
   protected!
   @authorization = DoorAuthorization.new(params[:authorization] || {})
   haml :authorization_form, :format => :html5
@@ -69,4 +70,3 @@ post '/admin/authorizations' do
   protected!
   @authorization = DoorAuthorization.create(params[:authorization])
 end
-

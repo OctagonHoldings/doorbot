@@ -1,24 +1,27 @@
 %h1.uk-heading-large
-	Logs!
+  Logs!
 
 %table.uk-table.uk-text-left
-	%thead
-		%tr
-			%th Time
-			%th Type
-			%th Number
-			%th Name
-			%th Door Opened?
-			%th
-	%tbody
-		- @tags.each do |tag|
-			%tr
-				%td= tag.created_at.strftime("%b %-d, %Y - %H:%M:%S") if tag.created_at
-				%td= tag.card_type
-				%td= tag.card_number
-				%td= tag.name
-				%td= tag.door_opened ? 'Yes' : 'No'
-				%td
-					- unless tag.door_opened?
-						%a.uk-button.uk-button-primary
-							Add
+  %thead
+    %tr
+      %th Time
+      %th Type
+      %th Number
+      %th Name
+      %th Door Opened?
+      %th
+  %tbody
+    - @tags.each do |tag|
+      %tr
+        %td= tag.created_at.strftime("%b %-d, %Y - %H:%M:%S") if tag.created_at
+        %td= tag.card_type
+        %td= tag.card_number
+        %td= tag.name
+        %td= tag.door_opened ? 'Yes' : 'No'
+        %td
+          - unless tag.door_opened?
+            %a.uk-button.uk-button-primary{href: "/admin/new?from_tag=#{tag.id}"}
+              - if tag.name == nil
+                Add
+              - else
+                Edit

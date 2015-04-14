@@ -1,9 +1,26 @@
 %h1.uk-heading-large
-  Hello Administrator
-%p.uk-text-large
-  What want you?
-%p
-  %a.uk-button.uk-button-primary.uk-button-large{:href => "#"} New Access
-  %a.uk-button.uk-button-primary.uk-button-large{:href => "/admin/logs"} View Logs
-  %a.uk-button.uk-button-primary.uk-button-large{:href => "/admin/list"} List Users
+  Authorized Users
 
+%table.uk-table.uk-text-left
+  %thead
+    %tr
+      %th Name
+      %th Active?
+      %th Type
+      %th Card Number
+      %th Expires
+      %th Created
+      %th Updated
+  %tbody
+    - @authorizations.each do |auth|
+      %tr
+        %td= auth.name
+        %td= auth.active ? 'Yes' : 'No'
+        %td= auth.card_type
+        %td= auth.card_number
+        %td= auth.expires_at.strftime("%b %-d, %Y - %H:%M:%S") if auth.expires_at
+        %td= auth.created_at.strftime("%b %-d, %Y - %H:%M:%S")
+        %td= auth.updated_at.strftime("%b %-d, %Y - %H:%M:%S")
+        %td
+          %a.uk-button.uk-button-primary{href: ""}
+            Delete
