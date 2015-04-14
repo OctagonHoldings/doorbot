@@ -4,8 +4,8 @@ require 'base64'
 describe "Log" do
   context 'when not logged in' do
 
-    it 'does not allow access to /admin/log without a password' do
-      get '/admin/log'
+    it 'does not allow access to /admin/logs without a password' do
+      get '/admin/logs'
       expect(last_response.status).to eq 401
       expect(last_response.header['WWW-Authenticate']).to eq 'Basic realm="Restricted Area"'
     end
@@ -24,7 +24,7 @@ describe "Log" do
     end
 
     it 'shows the log' do
-      get '/admin/log', {}, rack_env
+      get '/admin/logs', {}, rack_env
       expect(last_response).to be_ok
     end
 

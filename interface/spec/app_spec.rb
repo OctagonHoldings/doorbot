@@ -54,11 +54,6 @@ describe "Doorbot" do
       expect(last_response).to be_ok
     end
 
-    it 'allows access to /admin/logs' do
-      get '/admin/logs', {}, rack_env
-      expect(last_response).to be_ok
-    end
-
     it 'shows tag logs on /admin/logs' do
     end
 

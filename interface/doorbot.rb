@@ -48,10 +48,6 @@ get '/admin' do
   haml :admin, :format => :html5
 end
 
-get '/admin/log' do
-  protected!
-end
-
 get '/admin/list' do
   protected!
   haml :list, :format => :html5
