@@ -73,6 +73,9 @@ get '/admin/edit' do
     }
   elsif params[:authorization]
     auth_data = params[:authorization]
+  elsif params[:auth_id]
+    @authorization = DoorAuthorization.first(id: params[:auth_id])
+    auth_data = {}
   else
     auth_data = {}
   end
