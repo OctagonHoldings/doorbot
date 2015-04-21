@@ -1,5 +1,17 @@
-/*! UIkit 2.11.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
-(function($, UI, $win) {
+/*! UIkit 2.19.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(addon) {
+    var component;
+
+    if (window.UIkit) {
+        component = addon(UIkit);
+    }
+
+    if (typeof define == "function" && define.amd) {
+        define("uikit-tooltip", ["uikit"], function(){
+            return component || addon(UIkit);
+        });
+    }
+})(function(UI){
 
     "use strict";
 
@@ -19,12 +31,25 @@
 
         tip: "",
 
+        boot: function() {
+
+            // init code
+            UI.$html.on("mouseenter.tooltip.uikit focus.tooltip.uikit", "[data-uk-tooltip]", function(e) {
+                var ele = UI.$(this);
+
+                if (!ele.data("tooltip")) {
+                    var obj = UI.tooltip(ele, UI.Utils.options(ele.attr("data-uk-tooltip")));
+                    ele.trigger("mouseenter");
+                }
+            });
+        },
+
         init: function() {
 
             var $this = this;
 
             if (!$tooltip) {
-                $tooltip = $('<div class="uk-tooltip"></div>').appendTo("body");
+                $tooltip = UI.$('<div class="uk-tooltip"></div>').appendTo("body");
             }
 
             this.on({
@@ -50,7 +75,7 @@
             $tooltip.html('<div class="uk-tooltip-inner">' + this.tip + '</div>');
 
             var $this      = this,
-                pos        = $.extend({}, this.element.offset(), {width: this.element[0].offsetWidth, height: this.element[0].offsetHeight}),
+                pos        = UI.$.extend({}, this.element.offset(), {width: this.element[0].offsetWidth, height: this.element[0].offsetHeight}),
                 width      = $tooltip[0].offsetWidth,
                 height     = $tooltip[0].offsetHeight,
                 offset     = typeof(this.options.offset) === "function" ? this.options.offset.call(this.element) : this.options.offset,
@@ -66,9 +91,9 @@
 
             // prevent strange position
             // when tooltip is in offcanvas etc.
-            if ($('html').css('position')=='fixed' || $('body').css('position')=='fixed'){
-                var bodyoffset = $('body').offset(),
-                    htmloffset = $('html').offset(),
+            if (UI.$html.css('position')=='fixed' || UI.$body.css('position')=='fixed'){
+                var bodyoffset = UI.$('body').offset(),
+                    htmloffset = UI.$('html').offset(),
                     docoffset  = {'top': (htmloffset.top + bodyoffset.top), 'left': (htmloffset.left + bodyoffset.left)};
 
                 pos.left -= docoffset.left;
@@ -76,7 +101,7 @@
             }
 
 
-            if ((tmppos[0] == "left" || tmppos[0] == "right") && $.UIkit.langdirection == 'right') {
+            if ((tmppos[0] == "left" || tmppos[0] == "right") && UI.langdirection == 'right') {
                 tmppos[0] = tmppos[0] == "left" ? "right" : "left";
             }
 
@@ -87,7 +112,7 @@
                 "right"   : {top: pos.top + pos.height / 2 - height / 2, left: pos.left + pos.width + offset}
             };
 
-            $.extend(tcss, variants[tmppos[0]]);
+            UI.$.extend(tcss, variants[tmppos[0]]);
 
             if (tmppos.length == 2) tcss.left = (tmppos[1] == 'left') ? (pos.left) : ((pos.left + pos.width) - width);
 
@@ -128,13 +153,13 @@
 
                 tmppos = position.split("-");
 
-                $.extend(tcss, variants[tmppos[0]]);
+                UI.$.extend(tcss, variants[tmppos[0]]);
 
                 if (tmppos.length == 2) tcss.left = (tmppos[1] == 'left') ? (pos.left) : ((pos.left + pos.width) - width);
             }
 
 
-            tcss.left -= $("body").position().left;
+            tcss.left -= UI.$body.position().left;
 
             tooltipdelay = setTimeout(function(){
 
@@ -179,11 +204,11 @@
 
             var axis = "";
 
-            if(left < 0 || ((left-$win.scrollLeft())+width) > window.innerWidth) {
+            if(left < 0 || ((left - UI.$win.scrollLeft())+width) > window.innerWidth) {
                axis += "x";
             }
 
-            if(top < 0 || ((top-$win.scrollTop())+height) > window.innerHeight) {
+            if(top < 0 || ((top - UI.$win.scrollTop())+height) > window.innerHeight) {
                axis += "y";
             }
 
@@ -191,15 +216,5 @@
         }
     });
 
-
-    // init code
-    UI.$html.on("mouseenter.tooltip.uikit focus.tooltip.uikit", "[data-uk-tooltip]", function(e) {
-        var ele = $(this);
-
-        if (!ele.data("tooltip")) {
-            var obj = UI.tooltip(ele, UI.Utils.options(ele.attr("data-uk-tooltip")));
-            ele.trigger("mouseenter");
-        }
-    });
-
-})(jQuery, jQuery.UIkit, jQuery(window));
+    return UI.tooltip;
+});

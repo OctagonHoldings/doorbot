@@ -1,42 +1,48 @@
-/*! UIkit 2.11.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+/*! UIkit 2.19.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(addon) {
 
     var component;
 
-    if (jQuery && jQuery.UIkit) {
-        component = addon(jQuery, jQuery.UIkit);
+    if (window.UIkit) {
+        component = addon(UIkit);
     }
 
     if (typeof define == "function" && define.amd) {
         define("uikit-search", ["uikit"], function(){
-            return component || addon(jQuery, jQuery.UIkit);
+            return component || addon(UIkit);
         });
     }
 
-})(function($, UI){
+})(function(UI){
 
     "use strict";
 
-    var times = {'12h':[], '24h':[]};
+    var times = {'12h':[], '24h':[]}, i, h;
 
-    for(var i = 0, h=''; i<24; i++) {
+    for (i = 0, h=''; i<24; i++) {
 
         h = ''+i;
 
-        if(i<10)  h = '0'+h;
+        if (i<10)  h = '0'+h;
 
         times['24h'].push({value: (h+':00')});
         times['24h'].push({value: (h+':30')});
 
-        if (i > 0 && i<13) {
+        if (i === 0) {
+            h = 12;
             times['12h'].push({value: (h+':00 AM')});
             times['12h'].push({value: (h+':30 AM')});
         }
 
-        if (i > 12) {
+        if (i > 0 && i<13 && i!==12) {
+            times['12h'].push({value: (h+':00 AM')});
+            times['12h'].push({value: (h+':30 AM')});
+        }
+
+        if (i >= 12) {
 
             h = h-12;
-
+            if (h === 0) h = 12;
             if (h < 10) h = '0'+String(h);
 
             times['12h'].push({value: (h+':00 PM')});
@@ -50,6 +56,23 @@
         defaults: {
             format : '24h',
             delay  : 0
+        },
+
+        boot: function() {
+
+            // init code
+            UI.$html.on("focus.timepicker.uikit", "[data-uk-timepicker]", function(e) {
+
+                var ele = UI.$(this);
+
+                if (!ele.data("timepicker")) {
+                    var obj = UI.timepicker(ele, UI.Utils.options(ele.attr("data-uk-timepicker")));
+
+                    setTimeout(function(){
+                        obj.autocomplete.input.focus();
+                    }, 40);
+                }
+            });
         },
 
         init: function() {
@@ -68,7 +91,7 @@
             this.autocomplete = UI.autocomplete(this.element.parent(), this.options);
             this.autocomplete.dropdown.addClass('uk-dropdown-small uk-dropdown-scrollable');
 
-            this.autocomplete.on('uk.autocomplete.show', function() {
+            this.autocomplete.on('show.uk.autocomplete', function() {
 
                 var selected = $this.autocomplete.dropdown.find('[data-value="'+$this.autocomplete.input.val()+'"]');
 
@@ -139,7 +162,7 @@
                 minute = 0;
             }
 
-            this.autocomplete.input.val(this.formatTime(hour, minute, meridian));
+            this.autocomplete.input.val(this.formatTime(hour, minute, meridian)).trigger('change');
         },
 
         formatTime: function(hour, minute, meridian) {
@@ -149,16 +172,4 @@
         }
     });
 
-    // init code
-    UI.$html.on("focus.timepicker.uikit", "[data-uk-timepicker]", function(e) {
-        var ele = $(this);
-
-        if (!ele.data("timepicker")) {
-            var obj = UI.timepicker(ele, UI.Utils.options(ele.attr("data-uk-timepicker")));
-
-            setTimeout(function(){
-                obj.autocomplete.input.focus();
-            }, 20);
-        }
-    });
 });

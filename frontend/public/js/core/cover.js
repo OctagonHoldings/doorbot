@@ -1,19 +1,5 @@
-/*! UIkit 2.11.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
-(function(addon) {
-
-    var component;
-
-    if (jQuery && jQuery.UIkit) {
-        component = addon(jQuery, jQuery.UIkit);
-    }
-
-    if (typeof define == "function" && define.amd) {
-        define("uikit-cover", ["uikit"], function(){
-            return component || addon(jQuery, jQuery.UIkit);
-        });
-    }
-
-})(function($, UI){
+/*! UIkit 2.19.0 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
+(function(UI){
 
     "use strict";
 
@@ -23,20 +9,35 @@
             automute : true
         },
 
+        boot: function() {
+
+            // auto init
+            UI.ready(function(context) {
+
+                UI.$("[data-uk-cover]", context).each(function(){
+
+                    var ele = UI.$(this);
+
+                    if(!ele.data("cover")) {
+                        var plugin = UI.cover(ele, UI.Utils.options(ele.attr("data-uk-cover")));
+                    }
+                });
+            });
+        },
+
         init: function() {
 
-            this.parent    = this.element.parent();
-            this.dimension = {w: this.element.width(), h: this.element.height()};
-            this.ratio     = this.dimension.w / this.dimension.h;
+            this.parent = this.element.parent();
 
             UI.$win.on('load resize orientationchange', UI.Utils.debounce(function(){
                 this.check();
             }.bind(this), 100));
 
+            this.on("display.uk.check", function(e) {
+                if(this.element.is(":visible")) this.check();
+            }.bind(this));
+
             this.check();
-
-            this.element.data("cover", this);
-
 
             if (this.element.is('iframe') && this.options.automute) {
 
@@ -51,6 +52,23 @@
         },
 
         check: function() {
+
+            this.element.css({
+                'width'  : '',
+                'height' : ''
+            });
+
+            this.dimension = {w: this.element.width(), h: this.element.height()};
+
+            if (this.element.attr('width') && !isNaN(this.element.attr('width'))) {
+                this.dimension.w = this.element.attr('width');
+            }
+
+            if (this.element.attr('height') && !isNaN(this.element.attr('height'))) {
+                this.dimension.h = this.element.attr('height');
+            }
+
+            this.ratio     = this.dimension.w / this.dimension.h;
 
             var w = this.parent.width(), h = this.parent.height(), width, height;
 
@@ -74,16 +92,4 @@
         }
     });
 
-    // auto init
-    UI.ready(function(context) {
-
-        $("[data-uk-cover]", context).each(function(){
-
-            var ele = $(this);
-
-            if(!ele.data("cover")) {
-                var plugin = UI.cover(ele, UI.Utils.options(ele.attr("data-uk-cover")));
-            }
-        });
-    });
-});
+})(UIkit);
