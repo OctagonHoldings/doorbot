@@ -60,7 +60,7 @@ get '/admin/logs' do
   haml :logs, format: :html5
 end
 
-get '/admin/new' do
+get '/admin/edit' do
   protected!
   if params[:from_tag]
     tag = TagLog.get(params[:from_tag])

@@ -22,5 +22,9 @@
         %td= auth.created_at.strftime("%b %-d, %Y - %H:%M:%S")
         %td= auth.updated_at.strftime("%b %-d, %Y - %H:%M:%S")
         %td
-          %a.uk-button.uk-button-primary{href: ""}
-            Delete
+          .uk-button-group
+            %a.uk-button.uk-button-primary{href: ""}
+              Delete
+            %a.uk-button.uk-button-primary{href: "/admin/edit?auth_id=#{auth.id}"}
+              Edit
+

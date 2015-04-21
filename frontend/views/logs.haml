@@ -19,9 +19,8 @@
         %td= tag.name
         %td= tag.door_opened ? 'Yes' : 'No'
         %td
-          - unless tag.door_opened?
-            %a.uk-button.uk-button-primary{href: "/admin/new?from_tag=#{tag.id}"}
-              - if tag.name == nil
-                Add
-              - else
-                Edit
+          %a.uk-button.uk-button-primary{href: "/admin/edit?from_tag=#{tag.id}"}
+            - if tag.name == nil
+              Add
+            - else
+              Edit
