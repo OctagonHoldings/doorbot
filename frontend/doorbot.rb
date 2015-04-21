@@ -85,8 +85,9 @@ post '/admin/authorizations' do
   auth_data = params[:authorization]
   auth_data[:active] = auth_data[:active] == 'on' ? true : false
   auth_data[:expires_at] = auth_data[:expires_at] == '' ? nil : Date.parse(auth_data[:expires_at])
-  if params[:id]
-    @authorization = DoorAuthorization.first(id: params[:id])
+  @authorization = DoorAuthorization.first(id: params[:id]) if params[:id]
+
+  unless @authorization.nil?
     @authorization.update(auth_data)
   else
     @authorization = DoorAuthorization.create(auth_data)
