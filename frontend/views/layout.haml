@@ -3,6 +3,7 @@
   %head
     %title
       Doorbot
+    %link{:href => "http://fonts.googleapis.com/css?family=Roboto:500,100,300,700,400", :rel => "stylesheet"}/
     %link{:href => "/css/uikit.almost-flat.css", :rel => "stylesheet"}/
     %link{:href => "/css/doorbot.css", :rel => "stylesheet"}/
     %script{:src => "/js/jquery-2.1.1.min.js"}
@@ -24,8 +25,4 @@
             %a{:href => "/admin/list"}
               %i.uk-icon-list
                 Users
-      .uk-grid
-        .uk-width-medium-1-1
-          .uk-vertical-align.uk-text-center.gray-background
-            .uk-vertical-align-middle.uk-width-1-2
-              = yield
+      = yield
