@@ -2,7 +2,7 @@ require 'dm-sweatshop'
 require 'ffaker'
 
 TagLog.fixture(:opened) {{
-  card_type:   %w(clipper mifare)[rand(2)],
+  card_type:   %w(clipper rfid)[rand(2)],
   card_number: /\d{10}/.gen,
   name:        Faker::Name.name,
   created_at:  Time.now,
@@ -10,7 +10,7 @@ TagLog.fixture(:opened) {{
 }}
 
 TagLog.fixture(:not_opened) {{
-  card_type:   %w(clipper mifare)[rand(2)],
+  card_type:   %w(clipper rfid)[rand(2)],
   card_number: /\d{10}/.gen,
   name:        Faker::Name.name,
   created_at:  Time.now,
@@ -18,7 +18,7 @@ TagLog.fixture(:not_opened) {{
 }}
 
 TagLog.fixture(:unknown) {{
-  card_type:   %w(clipper mifare)[rand(2)],
+  card_type:   %w(clipper rfid)[rand(2)],
   card_number: /\d{10}/.gen,
   name:        nil,
   created_at:  Time.now,

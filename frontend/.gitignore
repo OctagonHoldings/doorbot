@@ -31,4 +31,5 @@ Icon
 
 # Doorbot-specific stuff
 doorbot.db
+test.db
 .env
