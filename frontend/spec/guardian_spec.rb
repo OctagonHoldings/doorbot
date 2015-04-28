@@ -67,8 +67,8 @@ describe 'Guardian' do
       expect(tag.name).to eq 'Bob'
     end
 
-    it 'opens the door' do
-      pending 'check that the door opener code runs'
+    it 'opens the door, and then locks it again' do
+      pending 'check that the door opener code runs, and that it re-locks'
       run_guardian
       tag = TagLog.last
       expect(tag.door_opened).to eq true
