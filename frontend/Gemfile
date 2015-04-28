@@ -4,6 +4,7 @@ gem 'sinatra'
 gem 'data_mapper'
 gem 'dm-sqlite-adapter'
 gem 'dotenv'
+gem 'haml'
 
 # dev
 gem 'rspec'
@@ -11,3 +12,4 @@ gem 'pry'
 gem 'dm-sweatshop'
 gem 'ffaker'
 gem 'blue-shell'
+gem 'rack-test'

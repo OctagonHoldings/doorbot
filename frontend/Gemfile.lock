@@ -70,6 +70,8 @@ GEM
     dotenv (0.8.0)
     fastercsv (1.5.5)
     ffaker (1.16.2)
+    haml (4.0.6)
+      tilt
     json (1.8.1)
     json_pure (1.8.1)
     method_source (0.8.2)
@@ -81,6 +83,8 @@ GEM
     rack (1.5.2)
     rack-protection (1.5.3)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
     randexp (0.1.7)
     rspec (3.1.0)
       rspec-core (~> 3.1.0)
@@ -114,6 +118,8 @@ DEPENDENCIES
   dm-sweatshop
   dotenv
   ffaker
+  haml
   pry
+  rack-test
   rspec
   sinatra
