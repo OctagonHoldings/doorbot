@@ -4,6 +4,9 @@ require 'data_mapper'
 require 'dm-sqlite-adapter'
 require 'dotenv'
 require 'pry'
+require 'sinatra/flash'
+
+enable :sessions
 
 Dotenv.load
 
@@ -76,6 +79,15 @@ get '/admin/edit' do
   end
   @authorization ||= DoorAuthorization.new(auth_data)
   haml :authorization_form, format: :html5
+end
+
+delete '/admin/delete' do
+  protected!
+  @authorization = DoorAuthorization.first(id: params[:auth_id])
+  if @authorization && @authorization.destroy
+    flash[:notice] = "Deleted #{@authorization.name}."
+  end
+  redirect '/admin/list'
 end
 
 post '/admin/authorizations' do

@@ -1,3 +1,17 @@
+:javascript
+  $(function(){
+    $('form').submit(function(event){
+      if (!confirm('Are you sure you want to delete ' + $(event.target).data('name') + '?')) {
+        event.preventDefault();
+      }
+    });
+  });
+
+- if flash[:notice]
+  .uk-alert(data-uk-alert)
+    %a.uk-alert-close.uk-close
+    %p= flash[:notice]
+
 %table.uk-table.uk-text-left
   %thead
     %tr
@@ -20,8 +34,9 @@
         %td= auth.updated_at.strftime("%b %-d, %Y - %H:%M:%S")
         %td
           .uk-button-group
-            %a.uk-button.uk-button-primary{href: ""}
-              Delete
+            %form{action: "/admin/delete?auth_id=#{auth.id}", method: 'post', 'data-name' => "#{auth.name}"}
+              %input{type: 'hidden', name: '_method', value: 'delete'}
+              %input.uk-button.uk-button-primary{type: 'submit', value: 'Delete'}
             %a.uk-button.uk-button-primary{href: "/admin/edit?auth_id=#{auth.id}"}
               Edit
 

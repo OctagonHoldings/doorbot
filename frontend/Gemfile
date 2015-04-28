@@ -5,6 +5,7 @@ gem 'data_mapper'
 gem 'dm-sqlite-adapter'
 gem 'dotenv'
 gem 'haml'
+gem 'sinatra-flash'
 
 # dev
 gem 'rspec'
