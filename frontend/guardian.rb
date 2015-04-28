@@ -4,18 +4,21 @@ require 'dotenv'
 require 'pry'
 require 'getoptlong'
 
-prog = '../reader/report_tag'
+reader_command = '../reader/report_tag'
 
 opts = GetoptLong.new(
   [ '--test', '-t', GetoptLong::OPTIONAL_ARGUMENT]
 )
 
+gpio_command = 'gpio'
+
 opts.each do |opt, arg|
   case opt
     when '--test'
       puts 'Test Mode'
-      prog = '../reader/fake_tag.sh'
+      reader_command = '../reader/fake_tag.sh'
       ENV['DOORBOT_DB'] = 'test.db'
+      gpio_command = 'true'
    end
 end
 
@@ -31,7 +34,9 @@ DataMapper.finalize
 DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
-tag_reporter = IO.popen(prog)
+tag_reporter = IO.popen(reader_command)
+
+`#{gpio_command} mode 17 out`
 
 while(true) do
   tag = tag_reporter.gets("\n").chop
@@ -49,6 +54,7 @@ while(true) do
     unless authorization.expired?
       # open the door here.
       tag_log[:door_opened] = true
+      `#{gpio_command} write 17 1`
     end
   end
 
