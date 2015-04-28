@@ -50,13 +50,40 @@ describe 'Guardian' do
   end
 
   context 'with a recognized card' do
-    it 'fetches the name and logs it'
+    before do
+      DoorAuthorization.create(
+        name: 'Bob',
+        card_type: 'rfid',
+        card_number: card_numbers.first,
+        created_at: Time.now,
+        updated_at: Time.now,
+        active: true
+      )
+    end
 
-    it 'opens the door'
+    it 'fetches the name and logs it' do
+      run_guardian
+      tag = TagLog.last
+      expect(tag.name).to eq 'Bob'
+    end
+
+    it 'opens the door' do
+      pending 'check that the door opener code runs'
+      run_guardian
+      tag = TagLog.last
+      expect(tag.door_opened).to eq true
+      expect(DoorOpener).to have_been_called  #pending specs must fail.
+    end
   end
 
   context 'with an unrecognized card' do
-    it 'does not open the door'
+    it 'does not open the door' do
+      pending 'check that the door opener code does not run'
+      run_guardian
+      tag = TagLog.last
+      expect(tag.door_opened).to eq false
+      expect(DoorOpener).to_not have_been_called  #pending specs must fail.
+    end
   end
 
   def run_guardian &block

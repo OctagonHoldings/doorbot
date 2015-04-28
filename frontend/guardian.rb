@@ -41,6 +41,17 @@ while(true) do
     card_number: tag
   }
 
+  authorization = DoorAuthorization.first(card_number: tag)
+
+  if authorization
+    tag_log[:name] = authorization.name
+
+    unless authorization.expired?
+      # open the door here.
+      tag_log[:door_opened] = true
+    end
+  end
+
   TagLog.create(tag_log)
   puts "Stored #{tag}"
 end

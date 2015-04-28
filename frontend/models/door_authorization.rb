@@ -9,4 +9,8 @@ class DoorAuthorization
   property :created_at,   DateTime
   property :updated_at,   DateTime
   property :active,       Boolean, default: true
+
+  def expired?
+    !expires_at.nil? && expires_at < DateTime.now
+  end
 end
