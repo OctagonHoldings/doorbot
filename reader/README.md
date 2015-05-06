@@ -3,9 +3,6 @@ doorbot
 
 This repo is for the C program that interfaces with the card reader. There's another program that is the frontend for setting this up.
 
-# guardian.py
-This will become the code for controlling door access
-
 # report_tag.c
 This returns the ID of the tags scanned by the door, and is run as a subprocess of guardian.py
 
