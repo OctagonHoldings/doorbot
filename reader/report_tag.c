@@ -22,7 +22,7 @@ int main()
     size_t modulations_size = 1;
     nfc_target target;
     MifareTag * clipper;
-    int i, j;
+    int i, j, ret;
     uint32_t clipper_id;
     
     nfc_init(&context);
@@ -33,21 +33,29 @@ int main()
         i = nfc_initiator_poll_target(dev, modulations, modulations_size, 20, 1, &target);
         if(i != 1)
             continue;
-        if(target.nti.nai.abtAtqa[0] == 3) // Clipper card
+        if(target.nti.nai.abtAtqa[0] == 3 && target.nti.nai.abtAtqa[1] == 68) // mifare desfire card.  Probably.
         {
+            MifareDESFireAID * aids = 0;
+	    clipper = 0;
             clipper_id = 0;
             clipper = freefare_get_tags(dev);
-            mifare_desfire_connect(clipper[0]);
-            MifareDESFireAID * aids = malloc(128);
-            mifare_desfire_get_application_ids(clipper[0], &aids, &j);
-            mifare_desfire_select_application(clipper[0], aids[0]);
-            mifare_desfire_read_data(clipper[0], 8, 1, 4, &clipper_id);
+	    if(clipper == -1) { goto not_valid; }
+            ret = mifare_desfire_connect(clipper[0]);
+	    if(ret == -1) { goto not_valid; }
+            ret = mifare_desfire_get_application_ids(clipper[0], &aids, &j);
+	    if(ret == -1) { goto not_valid; }
+            ret = mifare_desfire_select_application(clipper[0], aids[0]);
+	    if(ret == -1) { goto not_valid; }
+            ret = mifare_desfire_read_data(clipper[0], 8, 1, 4, &clipper_id);
+	    if(ret != 4) { goto not_valid; }
             clipper_id = ntohl(clipper_id);
+	    if(clipper_id == 0) { goto not_valid; }
             printf("c%d\n", clipper_id);
-            free(aids);
-            freefare_free_tags(clipper);
+not_valid:
+            if(aids) { mifare_desfire_free_application_ids(aids); }
+            if(clipper && clipper != -1) { freefare_free_tags(clipper); }
         }
-        else
+        else if(target.nti.nai.abtAtqa[0] == 0)
         {
             printf("0x");
             for(i = 0;i < target.nti.nai.szUidLen;i++)
