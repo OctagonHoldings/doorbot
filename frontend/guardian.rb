@@ -36,7 +36,7 @@ TagLog.auto_upgrade!
 
 tag_reporter = IO.popen(reader_command)
 
-`#{gpio_command} -g mode 4 out`
+`#{gpio_command} -g mode 9 out`
 
 while(true) do
   tag = tag_reporter.gets("\n").chop
@@ -54,9 +54,9 @@ while(true) do
     unless authorization.expired?
       # open the door here.
       tag_log[:door_opened] = true
-      `#{gpio_command} -g write 4 1`
+      `#{gpio_command} -g write 9 1`
       sleep 2
-      `#{gpio_command} -g write 4 0`
+      `#{gpio_command} -g write 9 0`
     end
   end
 
