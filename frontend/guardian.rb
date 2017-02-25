@@ -1,3 +1,5 @@
+#!/usr/bin/env ruby
+
 require 'data_mapper'
 require 'dm-sqlite-adapter'
 require 'dotenv'
