@@ -6,6 +6,7 @@ require 'dotenv'
 require 'pry'
 require 'getoptlong'
 
+
 def check_process(handle, command)
   if handle.closed?
     return restart(command)
@@ -29,23 +30,23 @@ def restart(command)
   return tag_reporter
 end
 
-def close_door
+def close_door(gpio_command)
   `#{gpio_command} -g write 9 1`
 end
 
-def open_door
+def open_door(gpio_command)
   `#{gpio_command} -g write 9 0`
   sleep 0.25
-  close_door
+  close_door(gpio_command)
 end
 
+
 reader_command = '../reader/report_tag'
+gpio_command = 'gpio'
 
 opts = GetoptLong.new(
   [ '--test', '-t', GetoptLong::OPTIONAL_ARGUMENT]
 )
-
-gpio_command = 'gpio'
 
 opts.each do |opt, arg|
   case opt
@@ -70,7 +71,7 @@ DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
 `#{gpio_command} -g mode 9 out`
-close_door
+close_door(gpio_command)
 
 tag_reporter = restart(reader_command)
 Process.detach(tag_reporter.pid)
@@ -101,6 +102,6 @@ while(true) do
 
   if tag_log[:door_opened]
     # open the door
-    open_door
+    open_door(gpio_command)
   end
 end
