@@ -6,6 +6,39 @@ require 'dotenv'
 require 'pry'
 require 'getoptlong'
 
+def check_process(handle, command)
+  if handle.closed?
+    return restart(command)
+  end
+
+  begin
+    Process.kill(0, handle.pid)
+  rescue Errno::ESRCH
+    puts "Reader exited. Restarting."
+    sleep 3  # if it crashes right away, don't go crazy
+    return restart(command)
+  end
+
+  handle
+end
+
+def restart(command)
+  tag_reporter = IO.popen(command)
+  Process.detach(tag_reporter.pid)
+  puts "Started reader, pid #{tag_reporter.pid}"
+  return tag_reporter
+end
+
+def close_door
+  `#{gpio_command} -g write 9 1`
+end
+
+def open_door
+  `#{gpio_command} -g write 9 0`
+  sleep 0.25
+  close_door
+end
+
 reader_command = '../reader/report_tag'
 
 opts = GetoptLong.new(
@@ -38,39 +71,6 @@ TagLog.auto_upgrade!
 
 `#{gpio_command} -g mode 9 out`
 close_door
-
-def check_process(handle, command)
-  if handle.closed?
-    return restart(command)
-  end
-
-  begin
-    Process.kill(0, handle.pid)
-  rescue Errno::ESRCH
-    puts "Reader exited. Restarting."
-    sleep 3  # if it crashes right away, don't go crazy
-    return restart(command)
-  end
-
-  handle
-end
-
-def restart(command)
-  tag_reporter = IO.popen(command)
-  Process.detach(tag_reporter.pid)
-  puts "Started reader, pid #{tag_reporter.pid}"
-  return tag_reporter
-end
-
-def open_door
-  `#{gpio_command} -g write 9 0`
-  sleep 0.25
-  close_door
-end
-
-def close_door
-  `#{gpio_command} -g write 9 1`
-end
 
 tag_reporter = restart(reader_command)
 Process.detach(tag_reporter.pid)
