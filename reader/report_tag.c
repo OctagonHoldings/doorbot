@@ -24,7 +24,7 @@ int main()
     MifareTag * clipper;
     int i, j, ret;
     uint32_t clipper_id;
-    
+
     nfc_init(&context);
     dev = nfc_open(context, NULL);
     nfc_initiator_init(dev);
@@ -51,6 +51,7 @@ int main()
             clipper_id = ntohl(clipper_id);
 	    if(clipper_id == 0) { goto not_valid; }
             printf("c%d\n", clipper_id);
+            fflush(stdout);
 not_valid:
             if(aids) { mifare_desfire_free_application_ids(aids); }
             if(clipper && clipper != -1) { freefare_free_tags(clipper); }
@@ -61,6 +62,7 @@ not_valid:
             for(i = 0;i < target.nti.nai.szUidLen;i++)
                 printf("%0x", target.nti.nai.abtUid[i]);
             printf("\n");
+            fflush(stdout);
         }
         while(nfc_initiator_target_is_present(dev, NULL) == 0) {}
     }
