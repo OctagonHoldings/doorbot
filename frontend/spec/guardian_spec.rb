@@ -86,6 +86,13 @@ describe 'Guardian' do
     end
   end
 
+  context 'when the tag reader process exits' do
+    it 'restarts it' do
+      pending 'check that the subprocess gets restarted'
+      expect(ProcessRestart).to have_been_called
+    end
+  end
+
   def run_guardian &block
     BlueShell::Runner.run guardian do |runner|
       runner.with_timeout(1) do
