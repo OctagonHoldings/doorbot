@@ -35,6 +35,7 @@ DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
 `#{gpio_command} -g mode 9 out`
+close_door
 
 def check_process(handle, command)
   if handle.closed?
@@ -45,6 +46,7 @@ def check_process(handle, command)
     Process.kill(0, handle.pid)
   rescue Errno::ESRCH
     puts "Reader exited. Restarting."
+    sleep 3  # if it crashes right away, don't go crazy
     return restart(command)
   end
 
@@ -56,6 +58,16 @@ def restart(command)
   Process.detach(tag_reporter.pid)
   puts "Started reader, pid #{tag_reporter.pid}"
   return tag_reporter
+end
+
+def open_door
+  `#{gpio_command} -g write 9 0`
+  sleep 0.25
+  close_door
+end
+
+def close_door
+  `#{gpio_command} -g write 9 1`
 end
 
 tag_reporter = restart(reader_command)
@@ -87,8 +99,6 @@ while(true) do
 
   if tag_log[:door_opened]
     # open the door
-    `#{gpio_command} -g write 9 1`
-    sleep 0.25
-    `#{gpio_command} -g write 9 0`
+    open_door
   end
 end
