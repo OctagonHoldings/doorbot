@@ -40,6 +40,17 @@ def open_door(gpio_command)
   close_door(gpio_command)
 end
 
+def accepted_beep(gpio_command)
+  `#{gpio_command} -g write 11 0`
+  sleep 0.1
+  `#{gpio_command} -g write 11 1`
+end
+
+def rejected_beep(gpio_command)
+  accepted_beep
+  sleep 0.2
+  accepted_beep
+end
 
 reader_command = '../reader/report_tag'
 gpio_command = 'gpio'
@@ -95,6 +106,10 @@ while(true) do
     unless authorization.expired?
       tag_log[:door_opened] = true
     end
+
+    accepted_beep
+  else
+    rejected_beep
   end
 
   TagLog.create(tag_log)
