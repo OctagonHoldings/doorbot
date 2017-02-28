@@ -36,8 +36,6 @@ end
 
 def open_door(gpio_command)
   `#{gpio_command} -g write 9 0`
-  sleep 0.25
-  close_door(gpio_command)
 end
 
 def accepted_beep(gpio_command)
@@ -63,9 +61,9 @@ opts.each do |opt, arg|
   case opt
     when '--test'
       puts 'Test Mode'
-      reader_command = '../reader/fake_tag.sh'
+      reader_command = arg.empty? ? '../reader/fake_tag.sh' : arg
       ENV['DOORBOT_DB'] = 'test.db'
-      gpio_command = 'true'
+      gpio_command = './spec/scripts/fake_gpio.sh'
   end
 end
 
@@ -103,13 +101,9 @@ while(true) do
   if authorization
     tag_log[:name] = authorization.name
 
-    unless authorization.expired?
+    unless authorization.expired? || ! authorization.active?
       tag_log[:door_opened] = true
     end
-
-    accepted_beep(gpio_command)
-  else
-    rejected_beep(gpio_command)
   end
 
   TagLog.create(tag_log)
@@ -118,5 +112,9 @@ while(true) do
   if tag_log[:door_opened]
     # open the door
     open_door(gpio_command)
+    accepted_beep(gpio_command)
+    close_door(gpio_command)
+  else
+    rejected_beep(gpio_command)
   end
 end
