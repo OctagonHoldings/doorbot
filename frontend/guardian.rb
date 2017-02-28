@@ -66,7 +66,7 @@ opts.each do |opt, arg|
       reader_command = '../reader/fake_tag.sh'
       ENV['DOORBOT_DB'] = 'test.db'
       gpio_command = 'true'
-   end
+  end
 end
 
 Dotenv.load
