@@ -47,9 +47,9 @@ def accepted_beep(gpio_command)
 end
 
 def rejected_beep(gpio_command)
-  accepted_beep
+  accepted_beep(gpio_command)
   sleep 0.2
-  accepted_beep
+  accepted_beep(gpio_command)
 end
 
 reader_command = '../reader/report_tag'
@@ -107,9 +107,9 @@ while(true) do
       tag_log[:door_opened] = true
     end
 
-    accepted_beep
+    accepted_beep(gpio_command)
   else
-    rejected_beep
+    rejected_beep(gpio_command)
   end
 
   TagLog.create(tag_log)
