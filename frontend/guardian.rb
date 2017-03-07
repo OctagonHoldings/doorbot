@@ -79,6 +79,7 @@ DataMapper.finalize
 DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
+close_door(gpio_command)
 `#{gpio_command} -g mode 9 out`
 close_door(gpio_command)
 
