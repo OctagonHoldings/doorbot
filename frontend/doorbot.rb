@@ -7,6 +7,7 @@ require 'dm-sqlite-adapter'
 require 'dotenv'
 require 'pry'
 require 'sinatra/flash'
+require 'warden'
 
 enable :sessions
 
@@ -17,6 +18,7 @@ DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/#{ENV['DOORBOT_DB']}")
 
 require_relative 'models/door_authorization'
 require_relative 'models/tag_log'
+require_relative 'models/user'
 
 DataMapper.finalize
 DoorAuthorization.auto_upgrade!

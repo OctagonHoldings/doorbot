@@ -6,6 +6,7 @@ gem 'dm-sqlite-adapter'
 gem 'dotenv'
 gem 'haml'
 gem 'sinatra-flash'
+gem 'warden'
 
 # dev
 gem 'rspec'

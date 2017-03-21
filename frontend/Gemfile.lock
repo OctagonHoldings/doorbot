@@ -112,6 +112,8 @@ GEM
     stringex (1.5.1)
     tilt (2.0.6)
     uuidtools (2.1.5)
+    warden (1.2.7)
+      rack (>= 1.0)
 
 PLATFORMS
   ruby
@@ -129,6 +131,7 @@ DEPENDENCIES
   rspec
   sinatra
   sinatra-flash
+  warden
 
 BUNDLED WITH
    1.14.6
