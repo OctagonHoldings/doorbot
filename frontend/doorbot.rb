@@ -108,3 +108,41 @@ post '/admin/authorizations' do
   end
   haml :authorization_confirmation, format: :html5
 end
+
+use Warden::Manager do |config|
+  config.serialize_into_session{|user| user.id }
+  config.serialize_from_session{|id| User.get(id) }
+
+  config.scope_defaults :default,
+    strategies: [:password],
+    # The action is a route to send the user to when
+    # warden.authenticate! returns a false answer. We'll show
+    # this route below.
+    action: 'auth/unauthenticated'
+
+  # When a user tries to log in and cannot, this specifies the
+  # app to send the user to.
+  config.failure_app = self
+end
+
+Warden::Manager.before_failure do |env,opts|
+  env['REQUEST_METHOD'] = 'POST'
+end
+
+Warden::Strategies.add(:password) do
+  def valid?
+    params['user']['name'] && params['user']['password']
+  end
+
+  def authenticate!
+    user = User.first(username: params['user']['name'])
+
+    if user.nil?
+      fail!("The username you entered does not exist.")
+    elsif user.authenticate(params['user']['password'])
+      success!(user)
+    else
+      fail!("Could not log in")
+    end
+  end
+end
