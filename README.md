@@ -13,6 +13,7 @@ Check each component's README for more.
 We have this running in the following configuration:
 
 * Code runs on a Raspberry Pi 2 model B
+  * Running Raspbian Jessie Lite
   * Database is stored locally, but backed up regularly
 * Reader is an [Adafruit PN532 breakout](https://www.adafruit.com/product/364)
   * It lives in [this box](https://www.polycase.com/ml-45f-15)
