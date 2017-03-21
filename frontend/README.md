@@ -11,6 +11,10 @@
 
 `scripts/start.sh` is a script that will run the code in the background on a raspberry pi. You can start it from cron or whatever.
 
+### Periodic maintenance
+
+It's recommended that `maintenance.rb` be run daily from cron.
+
 ## Testing
 
 To run the tests, just run `rspec`
