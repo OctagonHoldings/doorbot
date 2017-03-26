@@ -39,7 +39,7 @@ int main()
 	    clipper = 0;
             clipper_id = 0;
             clipper = freefare_get_tags(dev);
-	    if(clipper == -1) { goto not_valid; }
+	    if(!clipper) { goto not_valid; }
             ret = mifare_desfire_connect(clipper[0]);
 	    if(ret == -1) { goto not_valid; }
             ret = mifare_desfire_get_application_ids(clipper[0], &aids, &j);
