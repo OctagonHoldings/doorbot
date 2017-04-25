@@ -60,7 +60,7 @@ int main()
             if(ret != 4) { goto not_valid; }
             clipper_id = ntohl(clipper_id);
             if(clipper_id == 0) { goto not_valid; }
-            printf("c%d\n", clipper_id);
+            printf("t:c%d\n", clipper_id);
             fflush(stdout);
             syslog(LOG_NOTICE, "clipper card successfully read (c%d)\n", clipper_id);
             success = 1;
@@ -74,7 +74,7 @@ not_valid:
         else if(target.nti.nai.abtAtqa[0] == 0)
         {
             syslog(LOG_NOTICE, "Attempting to read generic RFID... ");
-            printf("0x");
+            printf("t:0x");
             for(i = 0;i < target.nti.nai.szUidLen;i++)
                 printf("%0x", target.nti.nai.abtUid[i]);
             printf("\n");
