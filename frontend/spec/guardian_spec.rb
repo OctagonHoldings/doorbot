@@ -26,9 +26,7 @@ describe 'Guardian' do
   end
 
   it 'stores the card number' do
-    run_guardian do |runner|
-      expect(runner).to say "Stored #{card_numbers.first}"
-    end
+    run_guardian
     tag = TagLog.last
     expect(tag.card_number).to eq card_numbers.first
   end

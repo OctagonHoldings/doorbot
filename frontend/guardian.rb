@@ -15,7 +15,6 @@ def check_process(handle, command)
   begin
     Process.kill(0, handle.pid)
   rescue Errno::ESRCH
-    puts "Reader exited. Restarting."
     sleep 3  # if it crashes right away, don't go crazy
     return restart(command)
   end
@@ -49,6 +48,8 @@ def rejected_beep(gpio_command)
   sleep 0.2
   accepted_beep(gpio_command)
 end
+
+$stdout.sync = true
 
 reader_command = '../reader/report_tag'
 gpio_command = 'gpio'
@@ -114,7 +115,6 @@ while(true) do
   end
 
   TagLog.create(tag_log)
-  puts "Stored #{tag}"
 
   if tag_log[:door_opened]
     # open the door
