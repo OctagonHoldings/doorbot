@@ -44,7 +44,7 @@ describe 'Maintenance' do
 
   def run_maintenance &block
     BlueShell::Runner.run maintenance do |runner|
-      runner.with_timeout(1) do
+      runner.with_timeout(2) do
         expect(runner).to say "Starting maintenance"
         yield runner if block
         begin
