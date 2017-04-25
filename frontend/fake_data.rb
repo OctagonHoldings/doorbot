@@ -5,7 +5,7 @@ require 'pry'
 
 Dotenv.load
 
-DataMapper::Logger.new($stdout, :debug)
+# DataMapper::Logger.new($stdout, :debug)
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/doorbot.db")
 
 require_relative 'models/door_authorization'

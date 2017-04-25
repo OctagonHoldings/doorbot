@@ -69,7 +69,7 @@ end
 
 Dotenv.load
 
-DataMapper::Logger.new($stdout, :debug)
+# DataMapper::Logger.new($stdout, :debug)
 DataMapper::setup(:default, "sqlite3://#{Dir.pwd}/#{ENV['DOORBOT_DB']}")
 
 require_relative 'models/door_authorization'
