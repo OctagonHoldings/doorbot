@@ -4,6 +4,7 @@
 #include<stddef.h>
 #include<syslog.h>
 #include<unistd.h>
+#include<time.h>
 
 // libnfc includes
 #include<nfc/nfc.h>
@@ -13,6 +14,7 @@
 #include<freefare.h>
 
 #define err_chk(cond) if(cond) { goto err; }
+#define BUF_LEN 512
 
 int main()
 {
@@ -28,11 +30,20 @@ int main()
     int i, j, ret;
     int success;
     uint32_t clipper_id;
+    char * buffer;
+    char * piece;
+    struct timeval start;
+    struct timeval end;
+    struct timeval res;
 
     nfc_init(&context);
     dev = nfc_open(context, NULL);
     nfc_initiator_init(dev);
     success = 0;
+    piece = calloc(BUF_LEN,1); // Should be big enough >_<
+    if(!piece) { syslog(LOG_ERR, "Cannot allocate memory"); exit(1); }
+    buffer = calloc(BUF_LEN,1); // Should be big enough >_<
+    if(!buffer) { syslog(LOG_ERR, "Cannot allocate memory"); exit(1); }
     while(1)
     {
         i = nfc_initiator_poll_target(dev, modulations, modulations_size, 20, 1, &target);
@@ -60,9 +71,10 @@ int main()
             if(ret != 4) { goto not_valid; }
             clipper_id = ntohl(clipper_id);
             if(clipper_id == 0) { goto not_valid; }
-            printf("t:c%d\n", clipper_id);
+            snprintf(buffer, BUF_LEN, "%d", clipper_id);
+            printf("t:c%s\n", buffer);
             fflush(stdout);
-            syslog(LOG_NOTICE, "clipper card successfully read (c%d)\n", clipper_id);
+            syslog(LOG_NOTICE, "clipper card successfully read (c%s)\n", buffer);
             success = 1;
 not_valid:
             if(aids) { mifare_desfire_free_application_ids(aids); }
@@ -74,15 +86,29 @@ not_valid:
         else if(target.nti.nai.abtAtqa[0] == 0)
         {
             syslog(LOG_NOTICE, "Attempting to read generic RFID... ");
-            printf("t:0x");
+            snprintf(piece, BUF_LEN, "0x");
+            strncpy(buffer, piece, BUF_LEN);
             for(i = 0;i < target.nti.nai.szUidLen;i++)
-                printf("%0x", target.nti.nai.abtUid[i]);
-            printf("\n");
+            {
+                snprintf(piece, BUF_LEN, "%0x", target.nti.nai.abtUid[i]);
+                strncat(buffer, piece, BUF_LEN);
+            }
+            printf("t:%s\n", buffer);
             fflush(stdout);
-            syslog(LOG_NOTICE, "read RFID");
+            syslog(LOG_NOTICE, "read RFID %s", buffer);
         }
+        gettimeofday(&start, NULL);
         usleep(500000);
-        while(nfc_initiator_target_is_present(dev, NULL) == 0) { syslog(LOG_NOTICE, "Card still present, sleeping...\n"); usleep(500000); }
+        while(nfc_initiator_target_is_present(dev, NULL) == 0) { usleep(100000); }
+        gettimeofday(&end, NULL);
+        timersub(&end, &start, &res);
+        syslog(LOG_NOTICE, "tag held for %d seconds and %d microseconds", res.tv_sec, res.tv_usec);
+        if(res.tv_sec >= 3)
+        {
+            printf("h:%s\n", buffer);
+            syslog(LOG_NOTICE, "tag (%s) held for at least 3 seconds, sending hold signal", buffer);
+        }
+        memset(buffer, '\0', BUF_LEN);
     }
 
 err:
