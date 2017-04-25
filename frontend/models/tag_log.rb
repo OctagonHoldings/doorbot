@@ -6,4 +6,5 @@ class TagLog
   property :name,        String, index: true
   property :created_at,  DateTime, index: true
   property :door_opened, Boolean
+  property :held_tag,    Boolean
 end

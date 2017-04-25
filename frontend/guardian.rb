@@ -92,9 +92,15 @@ while(true) do
   next unless tag =~ /\w/
   tag.chop!
 
+  if tag =~ /(\w+):(.*)/
+    flag = $1
+    tag = $2
+  end
+
   tag_log = {
     card_type: tag =~ /^c/ ? 'clipper' : 'rfid',
-    card_number: tag
+    card_number: tag,
+    held_tag: flag == 'h' ? true : false
   }
 
   authorization = DoorAuthorization.first(card_number: tag)

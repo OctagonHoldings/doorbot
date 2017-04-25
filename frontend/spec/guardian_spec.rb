@@ -53,6 +53,30 @@ describe 'Guardian' do
     end
   end
 
+  context 'when the card is just tagged' do
+    let(:card_numbers) { ['t:538912432432'] }
+
+    it 'pulls out the card number' do
+      run_guardian
+      tag = TagLog.last
+      expect(tag.card_number).to eq '538912432432'
+      expect(tag.card_type).to eq 'rfid'
+      expect(tag.held_tag).to be_falsy
+    end
+  end
+
+  context 'when the card held' do
+    let(:card_numbers) { ['h:538912432432'] }
+
+    it 'pulls out the card number, and sets the held flag' do
+      run_guardian
+      tag = TagLog.last
+      expect(tag.card_number).to eq '538912432432'
+      expect(tag.card_type).to eq 'rfid'
+      expect(tag.held_tag).to be_truthy
+    end
+  end
+
   context 'with a recognized card' do
     let(:active) { true }
     let(:expires_at) { nil }
@@ -127,7 +151,7 @@ describe 'Guardian' do
 
   def run_guardian &block
     BlueShell::Runner.run guardian do |runner|
-      runner.with_timeout(1) do
+      runner.with_timeout(2) do
         expect(runner).to say "Started reader"
         yield runner if block
         begin
