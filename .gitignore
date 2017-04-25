@@ -22,4 +22,5 @@
 *.x86_64
 *.hex
 reader/report_tag
+reader/debug_report_tag
 reader/determine_tag_type
