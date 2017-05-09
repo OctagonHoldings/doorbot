@@ -236,11 +236,7 @@ describe 'Guardian' do
   end
 
   def lock_commands
-    gpio_commands.select { |command| command =~ /write 9/ }
-  end
-
-  def beep_commands
-    gpio_commands.select { |command| command =~ /write 11/ }
+    gpio_commands.select { |command| command =~ /write (9|10)/ }
   end
 
   def front_door_unlocked
