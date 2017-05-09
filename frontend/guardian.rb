@@ -29,11 +29,13 @@ def restart(command)
   return tag_reporter
 end
 
-def close_door(gpio_command)
+# def close_door(gpio_command)
+
+def close_front_door(gpio_command)
   `#{gpio_command} -g write 9 1`
 end
 
-def open_door(gpio_command)
+def open_front_door(gpio_command)
   `#{gpio_command} -g write 9 0`
 end
 
@@ -76,9 +78,9 @@ DataMapper.finalize
 DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
-close_door(gpio_command)
+close_front_door(gpio_command)
 `#{gpio_command} -g mode 9 out`
-close_door(gpio_command)
+close_front_door(gpio_command)
 
 close_rollup(gpio_command)
 `#{gpio_command} -g mode 10 out`
@@ -123,7 +125,7 @@ while(true) do
 
   if tag_log[:door_opened]
     # open the door
-    open_door(gpio_command)
-    close_door(gpio_command)
+    open_front_door(gpio_command)
+    close_front_door(gpio_command)
   end
 end

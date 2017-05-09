@@ -75,7 +75,24 @@ describe 'Guardian' do
     end
   end
 
-  context 'with a recognized card' do
+  shared_examples 'access denied' do |user_name|
+    before do
+      run_guardian
+      @tag = TagLog.last
+    end
+
+    it 'sets the name if it exists' do
+      expect(@tag.name).to eq user_name
+    end
+
+    it 'does not open either door' do
+      expect(@tag.door_opened).to be_falsy
+      expect(rollup_door_unlocked).to be_falsy
+      expect(front_door_unlocked).to be_falsy
+    end
+  end
+
+  context 'tagging a recognized card' do
     let(:active) { true }
     let(:expires_at) { nil }
 
@@ -101,43 +118,93 @@ describe 'Guardian' do
       run_guardian
       tag = TagLog.last
       expect(tag.door_opened).to eq true
-      expect(door_unlocked).to be_truthy
-      expect(door_relocked).to be_truthy
+      expect(front_door_unlocked).to be_truthy
+      expect(front_door_relocked).to be_truthy
+    end
+
+    it 'does not open the rollup' do
+      run_guardian
+      expect(rollup_door_unlocked).to be_falsy
     end
 
     context 'when the account is inactive' do
       let(:active) { false }
-
-      it 'sets the name, but does not open the door' do
-        run_guardian
-        tag = TagLog.last
-        expect(tag.name).to eq 'Bob'
-        expect(tag.door_opened).to be_falsy
-        expect(door_unlocked).to be_falsy
-      end
+      include_examples 'access denied', 'Bob'
     end
 
     context 'when the account is expired' do
       let(:expires_at) { Time.now - 86400 * 3 }  # 3 days
+      include_examples 'access denied', 'Bob'
+    end
+  end
 
-      it 'sets the name, but does not open the door' do
+  context 'holding a recognized card' do
+    let(:active) { true }
+    let(:expires_at) { nil }
+    let(:card_numbers) { ['h:538912432432'] }
+
+    context 'with rollup access' do
+      before do
+        DoorAuthorization.create(
+          name:            'Claude Cahun',
+          card_type:       'rfid',
+          card_number:     card_numbers.first,
+          created_at:      Time.now,
+          updated_at:      Time.now,
+          expires_at:      expires_at,
+          active:          active,
+          can_open_rollup: true
+        )
+      end
+
+      it 'fetches the name and logs it' do
         run_guardian
         tag = TagLog.last
-        expect(tag.name).to eq 'Bob'
-        expect(tag.door_opened).to be_falsy
-        expect(door_unlocked).to be_falsy
+        expect(tag.name).to eq 'Claude Cahun'
       end
+
+      it 'opens the rollup door, and then resets the relay' do
+        run_guardian
+        tag = TagLog.last
+        expect(tag.door_opened).to eq true
+        expect(tag.held_tag).to be_truthy
+
+        expect(rollup_door_unlocked).to be_truthy
+        expect(rollup_door_relocked).to be_truthy
+      end
+
+      it 'does not open the front door' do
+        run_guardian
+        expect(front_door_unlocked).to be_falsy
+      end
+
+      context 'when the account is inactive' do
+        let(:active) { false }
+
+        include_examples 'access denied', 'Claude Cahun'
+      end
+    end
+
+    context 'without rollup access' do
+      before do
+        DoorAuthorization.create(
+          name:            'Cindy Sherman',
+          card_type:       'rfid',
+          card_number:     card_numbers.first,
+          created_at:      Time.now,
+          updated_at:      Time.now,
+          expires_at:      expires_at,
+          active:          active,
+          can_open_rollup: false
+        )
+      end
+
+      include_examples 'access denied', 'Cindy Sherman'
     end
   end
 
   context 'with an unrecognized card' do
-    it 'does not open the door' do
-      run_guardian
-      tag = TagLog.last
-      expect(tag).to be
-      expect(tag.door_opened).to be_falsy
-      expect(door_unlocked).to be_falsy
-    end
+    include_examples 'access denied', nil
   end
 
   context 'when the tag reader process exits' do
@@ -175,11 +242,19 @@ describe 'Guardian' do
     gpio_commands.select { |command| command =~ /write 11/ }
   end
 
-  def door_unlocked
+  def front_door_unlocked
     lock_commands.include?('-g write 9 0')
   end
 
-  def door_relocked
+  def front_door_relocked
     lock_commands.last == '-g write 9 1'
+  end
+
+  def rollup_door_unlocked
+    lock_commands.include?('-g write 10 0')
+  end
+
+  def rollup_door_relocked
+    lock_commands.last == '-g write 10 1'
   end
 end
