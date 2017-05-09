@@ -34,10 +34,11 @@
       %input{type: 'date', name: 'authorization[expires_at]', value: @authorization[:expires_at]}
 
   .uk-form-row
-
     %input{type: 'hidden', name: 'authorization[can_open_rollup]', value: 'f'}
     %input#can-open-rollup{type: 'checkbox', name: 'authorization[can_open_rollup]', checked: @authorization[:can_open_rollup] ? 'checked' : nil, value: 't'}
     %label Can Open Rollup?
+    %span.uk-form-help-inline.uk-text-danger
+      Only give this to people who know how to close the rollup.
 
   .uk-form-row
     %label
