@@ -142,13 +142,14 @@ describe 'Guardian' do
     let(:active) { true }
     let(:expires_at) { nil }
     let(:card_numbers) { ['h:538912432432'] }
+    let(:card_number_for_auth) { '538912432432' }
 
     context 'with rollup access' do
       before do
         DoorAuthorization.create(
           name:            'Claude Cahun',
           card_type:       'rfid',
-          card_number:     card_numbers.first,
+          card_number:     card_number_for_auth,
           created_at:      Time.now,
           updated_at:      Time.now,
           expires_at:      expires_at,
@@ -190,7 +191,7 @@ describe 'Guardian' do
         DoorAuthorization.create(
           name:            'Cindy Sherman',
           card_type:       'rfid',
-          card_number:     card_numbers.first,
+          card_number:     card_number_for_auth,
           created_at:      Time.now,
           updated_at:      Time.now,
           expires_at:      expires_at,

@@ -28,26 +28,23 @@ def restart(command)
   return tag_reporter
 end
 
-def close_front_door(gpio_command)
-  `#{gpio_command} -g write 9 1`
+def close_door(gpio_command, door)
+  `#{gpio_command} -g write #{DOOR_PINS[door]} 1`
 end
 
-def open_front_door(gpio_command)
-  `#{gpio_command} -g write 9 0`
-end
-
-def close_rollup(gpio_command)
-  `#{gpio_command} -g write 10 1`
-end
-
-def open_rollup(gpio_command)
-  `#{gpio_command} -g write 10 0`
+def open_door(gpio_command, door)
+  `#{gpio_command} -g write #{DOOR_PINS[door]} 0`
 end
 
 $stdout.sync = true
 
 reader_command = '../reader/report_tag'
 gpio_command = 'gpio'
+
+DOOR_PINS = {
+  front_door: 9,
+  rollup_door: 10
+}
 
 opts = GetoptLong.new(
   [ '--test', '-t', GetoptLong::OPTIONAL_ARGUMENT]
@@ -75,13 +72,13 @@ DataMapper.finalize
 DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
-close_front_door(gpio_command)
+close_door(gpio_command, :front_door)
 `#{gpio_command} -g mode 9 out`
-close_front_door(gpio_command)
+close_door(gpio_command, :front_door)
 
-close_rollup(gpio_command)
+close_door(gpio_command, :rollup_door)
 `#{gpio_command} -g mode 10 out`
-close_rollup(gpio_command)
+close_door(gpio_command, :rollup_door)
 
 # spare relay. off.
 `#{gpio_command} -g write 11 1`
@@ -102,26 +99,14 @@ while(true) do
     tag = $2
   end
 
-  tag_log = {
+  tag_log = TagLog.create(
     card_type: tag =~ /^c/ ? 'clipper' : 'rfid',
     card_number: tag,
     held_tag: flag == 'h' ? true : false
-  }
+  )
 
-  authorization = DoorAuthorization.first(card_number: tag)
-
-  if authorization
-    tag_log[:name] = authorization.name
-
-    unless authorization.expired? || ! authorization.active?
-      tag_log[:door_opened] = true
-    end
-  end
-
-  TagLog.create(tag_log)
-
-  if tag_log[:door_opened]
-    open_front_door(gpio_command)
-    close_front_door(gpio_command)
+  if tag_log.door_opened
+    open_door(gpio_command, tag_log.door)
+    close_door(gpio_command, tag_log.door)
   end
 end
