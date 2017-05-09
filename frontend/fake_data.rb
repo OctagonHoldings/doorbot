@@ -31,4 +31,5 @@ TagLog.auto_upgrade!
   TagLog.gen(:opened)
   TagLog.gen(:not_opened)
   TagLog.gen(:unknown)
+  TagLog.gen(:opened_with_hold)
 end

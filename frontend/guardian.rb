@@ -37,16 +37,12 @@ def open_door(gpio_command)
   `#{gpio_command} -g write 9 0`
 end
 
-def accepted_beep(gpio_command)
-  `#{gpio_command} -g write 11 0`
-  sleep 0.1
-  `#{gpio_command} -g write 11 1`
+def close_rollup(gpio_command)
+  `#{gpio_command} -g write 10 1`
 end
 
-def rejected_beep(gpio_command)
-  accepted_beep(gpio_command)
-  sleep 0.2
-  accepted_beep(gpio_command)
+def open_rollup(gpio_command)
+  `#{gpio_command} -g write 10 0`
 end
 
 $stdout.sync = true
@@ -84,6 +80,15 @@ close_door(gpio_command)
 `#{gpio_command} -g mode 9 out`
 close_door(gpio_command)
 
+close_rollup(gpio_command)
+`#{gpio_command} -g mode 10 out`
+close_rollup(gpio_command)
+
+# spare relay. off.
+`#{gpio_command} -g write 11 1`
+`#{gpio_command} -g mode 11 out`
+
+
 tag_reporter = restart(reader_command)
 Process.detach(tag_reporter.pid)
 
@@ -119,9 +124,6 @@ while(true) do
   if tag_log[:door_opened]
     # open the door
     open_door(gpio_command)
-    accepted_beep(gpio_command)
     close_door(gpio_command)
-  else
-    rejected_beep(gpio_command)
   end
 end

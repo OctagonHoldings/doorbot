@@ -17,6 +17,7 @@
     %tr
       %th Name
       %th Active?
+      %th Open Rollup?
       %th Type
       %th Card Number
       %th Expires
@@ -27,6 +28,7 @@
       %tr
         %td= auth.name
         %td= auth.active ? 'Yes' : 'No'
+        %td= auth.can_open_rollup ? 'Yes' : 'No'
         %td= auth.card_type
         %td= auth.card_number
         %td= auth.expires_at.strftime("%b %-d, %Y - %H:%M:%S") if auth.expires_at
