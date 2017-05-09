@@ -7,6 +7,7 @@ gem 'dotenv'
 gem 'haml'
 gem 'sinatra-flash'
 gem 'warden'
+gem 'bcrypt-ruby'
 
 # dev
 gem 'rspec'

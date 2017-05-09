@@ -119,6 +119,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bcrypt-ruby
   blue-shell
   data_mapper
   dm-sqlite-adapter

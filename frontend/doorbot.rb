@@ -8,6 +8,7 @@ require 'dotenv'
 require 'pry'
 require 'sinatra/flash'
 require 'warden'
+require 'bcrypt'
 
 enable :sessions
 
