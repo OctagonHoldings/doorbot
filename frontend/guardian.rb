@@ -6,7 +6,6 @@ require 'dotenv'
 require 'pry'
 require 'getoptlong'
 
-
 def check_process(handle, command)
   if handle.closed?
     return restart(command)
@@ -28,8 +27,6 @@ def restart(command)
   puts "Started reader, pid #{tag_reporter.pid}"
   return tag_reporter
 end
-
-# def close_door(gpio_command)
 
 def close_front_door(gpio_command)
   `#{gpio_command} -g write 9 1`
@@ -124,7 +121,6 @@ while(true) do
   TagLog.create(tag_log)
 
   if tag_log[:door_opened]
-    # open the door
     open_front_door(gpio_command)
     close_front_door(gpio_command)
   end

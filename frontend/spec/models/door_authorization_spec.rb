@@ -14,7 +14,7 @@ describe DoorAuthorization do
     end
 
     it 'is false for unexpired auths' do
-      auth = DoorAuthorization.gen(:active)
+      auth = DoorAuthorization.gen(:active_without_rollup)
       expect(auth.expired?).to eq false
     end
   end

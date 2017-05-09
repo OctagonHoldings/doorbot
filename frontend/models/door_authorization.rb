@@ -14,4 +14,15 @@ class DoorAuthorization
   def expired?
     !expires_at.nil? && expires_at < DateTime.now
   end
+
+  def openable_doors
+    doors = []
+
+    if active && !expired?
+      doors << :front_door
+      doors << :rollup_door if can_open_rollup
+    end
+
+    doors
+  end
 end

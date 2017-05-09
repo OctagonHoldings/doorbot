@@ -24,7 +24,8 @@ DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
 3.times do
-  DoorAuthorization.gen(:active)
+  DoorAuthorization.gen(:active_without_rollup)
+  DoorAuthorization.gen(:active_with_rollup)
   DoorAuthorization.gen(:inactive)
   DoorAuthorization.gen(:expired)
 
