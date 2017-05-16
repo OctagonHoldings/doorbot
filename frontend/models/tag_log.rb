@@ -8,7 +8,7 @@ class TagLog
   property :is_authorized, Boolean
   property :held_tag,    Boolean
 
-  before :create, :set_name_and_opened
+  before :create, :set_name_and_authorized
 
   def associated_auth
     DoorAuthorization.first(card_number: card_number, card_type: card_type)
@@ -20,7 +20,7 @@ class TagLog
 
   private
 
-  def set_name_and_opened
+  def set_name_and_authorized
     if associated_auth
       self.name = associated_auth.name
       self.is_authorized = associated_auth.openable_doors.include?(door)

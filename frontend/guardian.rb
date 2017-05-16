@@ -6,6 +6,11 @@ require 'dotenv'
 require 'pry'
 require 'getoptlong'
 
+DOOR_PINS = {
+  front_door: 9,
+  rollup_door: 10
+}
+
 def check_process(handle, command)
   if handle.closed?
     return restart(command)
@@ -40,11 +45,6 @@ $stdout.sync = true
 
 reader_command = '../reader/report_tag'
 gpio_command = 'gpio'
-
-DOOR_PINS = {
-  front_door: 9,
-  rollup_door: 10
-}
 
 opts = GetoptLong.new(
   [ '--test', '-t', GetoptLong::OPTIONAL_ARGUMENT]
