@@ -5,7 +5,7 @@ class TagLog
   property :card_number, String, index: true
   property :name,        String, index: true
   property :created_at,  DateTime, index: true
-  property :door_opened, Boolean
+  property :is_authorized, Boolean
   property :held_tag,    Boolean
 
   before :create, :set_name_and_opened
@@ -23,9 +23,9 @@ class TagLog
   def set_name_and_opened
     if associated_auth
       self.name = associated_auth.name
-      self.door_opened = associated_auth.openable_doors.include?(door)
+      self.is_authorized = associated_auth.openable_doors.include?(door)
     else
-      self.door_opened = false
+      self.is_authorized = false
     end
   end
 end

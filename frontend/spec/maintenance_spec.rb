@@ -19,7 +19,7 @@ describe 'Maintenance' do
         card_type: 'clipper',
         card_number: 'c1234567',
         name: 'Foo Guy',
-        door_opened: true,
+        is_authorized: true,
         created_at: Date.today
       )
 
@@ -27,7 +27,7 @@ describe 'Maintenance' do
         card_type: 'clipper',
         card_number: 'c1234567',
         name: 'Older Foo Guy',
-        door_opened: true,
+        is_authorized: true,
         created_at: Date.today - 31
       )
     end

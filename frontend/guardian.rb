@@ -105,8 +105,9 @@ while(true) do
     held_tag: flag == 'h' ? true : false
   )
 
-  if tag_log.door_opened
+  if tag_log.is_authorized
     open_door(gpio_command, tag_log.door)
+    sleep 0.1
     close_door(gpio_command, tag_log.door)
   end
 end

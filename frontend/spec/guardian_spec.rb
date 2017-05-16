@@ -86,7 +86,7 @@ describe 'Guardian' do
     end
 
     it 'does not open either door' do
-      expect(@tag.door_opened).to be_falsy
+      expect(@tag.is_authorized).to be_falsy
       expect(rollup_door_unlocked).to be_falsy
       expect(front_door_unlocked).to be_falsy
     end
@@ -117,7 +117,7 @@ describe 'Guardian' do
     it 'opens the door, and then locks it again' do
       run_guardian
       tag = TagLog.last
-      expect(tag.door_opened).to eq true
+      expect(tag.is_authorized).to eq true
       expect(front_door_unlocked).to be_truthy
       expect(front_door_relocked).to be_truthy
     end
@@ -167,7 +167,7 @@ describe 'Guardian' do
       it 'opens the rollup door, and then resets the relay' do
         run_guardian
         tag = TagLog.last
-        expect(tag.door_opened).to eq true
+        expect(tag.is_authorized).to eq true
         expect(tag.held_tag).to be_truthy
 
         expect(rollup_door_unlocked).to be_truthy
