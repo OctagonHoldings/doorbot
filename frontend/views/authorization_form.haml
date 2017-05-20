@@ -1,3 +1,15 @@
+:javascript
+  var hasRollupAccess = !!#{@authorization.can_open_rollup}
+  $(function(){
+    $('form').submit(function(event){
+      if (!hasRollupAccess && $('#can-open-rollup', this).prop('checked')) {
+        if (!confirm('Are you sure you want to grant rollup access?')) {
+          event.preventDefault();
+        }
+      }
+    });
+  });
+
 %form.uk-form.uk-form-horizontal{action: '/admin/authorizations', method: :post}
   %input{type: 'hidden', name: 'id', value: @authorization[:id]}
 
@@ -20,6 +32,13 @@
     %label.uk-form-label Expires
     .uk-form-controls
       %input{type: 'date', name: 'authorization[expires_at]', value: @authorization[:expires_at]}
+
+  .uk-form-row
+    %input{type: 'hidden', name: 'authorization[can_open_rollup]', value: 'f'}
+    %input#can-open-rollup{type: 'checkbox', name: 'authorization[can_open_rollup]', checked: @authorization[:can_open_rollup] ? 'checked' : nil, value: 't'}
+    %label Can Open Rollup?
+    %span.uk-form-help-inline.uk-text-danger
+      Only give this to people who know how to close the rollup.
 
   .uk-form-row
     %label

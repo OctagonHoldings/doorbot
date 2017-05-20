@@ -5,6 +5,7 @@
       %th Type
       %th Number
       %th Name
+      %th Which Door?
       %th Door Opened?
       %th
   %tbody
@@ -14,7 +15,8 @@
         %td= tag.card_type
         %td= tag.card_number
         %td= tag.name
-        %td= tag.door_opened ? 'Yes' : 'No'
+        %td= tag.held_tag ? 'Rollup Door' : 'Front Door'
+        %td= tag.is_authorized ? 'Yes' : 'No'
         %td
           %a.uk-button.uk-button-primary{href: "/admin/edit?from_tag=#{tag.id}"}
             - if tag.name == nil
