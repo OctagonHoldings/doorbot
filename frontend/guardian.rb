@@ -6,6 +6,10 @@ require 'dotenv'
 require 'pry'
 require 'getoptlong'
 
+DOOR_PINS = {
+  front_door: 9,
+  rollup_door: 10
+}
 
 def check_process(handle, command)
   if handle.closed?
@@ -29,24 +33,12 @@ def restart(command)
   return tag_reporter
 end
 
-def close_door(gpio_command)
-  `#{gpio_command} -g write 9 1`
+def close_door(gpio_command, door)
+  `#{gpio_command} -g write #{DOOR_PINS[door]} 1`
 end
 
-def open_door(gpio_command)
-  `#{gpio_command} -g write 9 0`
-end
-
-def accepted_beep(gpio_command)
-  `#{gpio_command} -g write 11 0`
-  sleep 0.1
-  `#{gpio_command} -g write 11 1`
-end
-
-def rejected_beep(gpio_command)
-  accepted_beep(gpio_command)
-  sleep 0.2
-  accepted_beep(gpio_command)
+def open_door(gpio_command, door)
+  `#{gpio_command} -g write #{DOOR_PINS[door]} 0`
 end
 
 $stdout.sync = true
@@ -80,9 +72,18 @@ DataMapper.finalize
 DoorAuthorization.auto_upgrade!
 TagLog.auto_upgrade!
 
-close_door(gpio_command)
+close_door(gpio_command, :front_door)
 `#{gpio_command} -g mode 9 out`
-close_door(gpio_command)
+close_door(gpio_command, :front_door)
+
+close_door(gpio_command, :rollup_door)
+`#{gpio_command} -g mode 10 out`
+close_door(gpio_command, :rollup_door)
+
+# spare relay. off.
+`#{gpio_command} -g write 11 1`
+`#{gpio_command} -g mode 11 out`
+
 
 tag_reporter = restart(reader_command)
 Process.detach(tag_reporter.pid)
@@ -98,30 +99,15 @@ while(true) do
     tag = $2
   end
 
-  tag_log = {
+  tag_log = TagLog.create(
     card_type: tag =~ /^c/ ? 'clipper' : 'rfid',
     card_number: tag,
     held_tag: flag == 'h' ? true : false
-  }
+  )
 
-  authorization = DoorAuthorization.first(card_number: tag)
-
-  if authorization
-    tag_log[:name] = authorization.name
-
-    unless authorization.expired? || ! authorization.active?
-      tag_log[:door_opened] = true
-    end
-  end
-
-  TagLog.create(tag_log)
-
-  if tag_log[:door_opened]
-    # open the door
-    open_door(gpio_command)
-    accepted_beep(gpio_command)
-    close_door(gpio_command)
-  else
-    rejected_beep(gpio_command)
+  if tag_log.is_authorized
+    open_door(gpio_command, tag_log.door)
+    sleep 0.1
+    close_door(gpio_command, tag_log.door)
   end
 end

@@ -1,14 +1,26 @@
 require 'dm-sweatshop'
 require 'ffaker'
 
-DoorAuthorization.fixture(:active) {{
-  name:        FFaker::Name.name,
-  card_type:   %w(clipper mifare)[rand(2)],
-  card_number: /\d{10}/.gen,
-  expires_at:  nil,
-  created_at:  Time.now,
-  updated_at:  Time.now,
-  active:      true,
+DoorAuthorization.fixture(:active_without_rollup) {{
+  name:            FFaker::Name.name,
+  card_type:       %w(clipper mifare)[rand(2)],
+  card_number:     /\d{10}/.gen,
+  expires_at:      nil,
+  created_at:      Time.now,
+  updated_at:      Time.now,
+  active:          true,
+  can_open_rollup: false
+}}
+
+DoorAuthorization.fixture(:active_with_rollup) {{
+  name:            FFaker::Name.name,
+  card_type:       %w(clipper mifare)[rand(2)],
+  card_number:     /\d{10}/.gen,
+  expires_at:      nil,
+  created_at:      Time.now,
+  updated_at:      Time.now,
+  active:          true,
+  can_open_rollup: true
 }}
 
 DoorAuthorization.fixture(:inactive) {{
@@ -18,7 +30,7 @@ DoorAuthorization.fixture(:inactive) {{
   expires_at:  nil,
   created_at:  Time.now,
   updated_at:  Time.now,
-  active:      true,
+  active:      false,
 }}
 
 DoorAuthorization.fixture(:expired) {{
