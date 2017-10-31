@@ -50,7 +50,7 @@ int main()
         if(i != 1)
         {
             syslog(LOG_ERR, "nfc_initiator_poll_target returned %d instead of 1!\n", i);
-            continue;
+            return -1;
         }
         if(target.nti.nai.abtAtqa[0] == 3 && target.nti.nai.abtAtqa[1] == 68) // mifare desfire card.  Probably.
         {
