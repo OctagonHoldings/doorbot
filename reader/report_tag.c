@@ -105,9 +105,13 @@ not_valid:
         syslog(LOG_NOTICE, "tag held for %d seconds and %d microseconds", res.tv_sec, res.tv_usec);
         if(res.tv_sec >= 3)
         {
-            printf("h:%s\n", buffer);
+            if(clipper_id)
+                printf("h:c%s\n", buffer);
+            else
+                printf("h:%s\n", buffer);
             syslog(LOG_NOTICE, "tag (%s) held for at least 3 seconds, sending hold signal", buffer);
         }
+        clipper_id = 0;
         memset(buffer, '\0', BUF_LEN);
     }
 
