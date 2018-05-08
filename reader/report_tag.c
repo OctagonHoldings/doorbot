@@ -37,7 +37,7 @@ int main()
     struct timeval res;
 
     nfc_init(&context);
-    dev = nfc_open(context, NULL);
+    dev = nfc_open(context, "acr122_usb:001:004");
     nfc_initiator_init(dev);
     success = 0;
     piece = calloc(BUF_LEN,1); // Should be big enough >_<
@@ -46,10 +46,13 @@ int main()
     if(!buffer) { syslog(LOG_ERR, "Cannot allocate memory"); exit(1); }
     while(1)
     {
+reset:
         i = nfc_initiator_poll_target(dev, modulations, modulations_size, 20, 1, &target);
         if(i != 1)
         {
             syslog(LOG_ERR, "nfc_initiator_poll_target returned %d instead of 1!\n", i);
+            if(i == -6)
+                goto reset;
             return -1;
         }
         if(target.nti.nai.abtAtqa[0] == 3 && target.nti.nai.abtAtqa[1] == 68) // mifare desfire card.  Probably.
