@@ -7,10 +7,11 @@ gem 'dotenv'
 gem 'haml'
 gem 'sinatra-flash'
 
-# dev
-gem 'rspec'
-gem 'pry'
-gem 'dm-sweatshop'
-gem 'ffaker'
-gem 'blue-shell'
-gem 'rack-test'
+group :development, :test do
+  gem 'rspec'
+  gem 'pry'
+  gem 'dm-sweatshop'
+  gem 'ffaker'
+  gem 'blue-shell'
+  gem 'rack-test'
+end
