@@ -46,10 +46,13 @@ int main()
     if(!buffer) { syslog(LOG_ERR, "Cannot allocate memory"); exit(1); }
     while(1)
     {
+reset:
         i = nfc_initiator_poll_target(dev, modulations, modulations_size, 20, 1, &target);
         if(i != 1)
         {
             syslog(LOG_ERR, "nfc_initiator_poll_target returned %d instead of 1!\n", i);
+            if(i == -90)
+                goto reset;
             return -1;
         }
         if(target.nti.nai.abtAtqa[0] == 3 && target.nti.nai.abtAtqa[1] == 68) // mifare desfire card.  Probably.
@@ -80,7 +83,10 @@ not_valid:
             if(aids) { mifare_desfire_free_application_ids(aids); }
             if(clipper && clipper != (void *) -1) { freefare_free_tags(clipper); }
             if(!success)
+            {
                 syslog(LOG_NOTICE, "mifare read failed\n");
+                goto reset;
+            }
             success = 0;
         }
         else if(target.nti.nai.abtAtqa[0] == 0)
@@ -97,6 +103,7 @@ not_valid:
             fflush(stdout);
             syslog(LOG_NOTICE, "read RFID %s", buffer);
         }
+        syslog(LOG_NOTICE, "Waiting to determine if card is held...");
         gettimeofday(&start, NULL);
         usleep(500000);
         while(nfc_initiator_target_is_present(dev, NULL) == 0) { usleep(100000); }
