@@ -44,8 +44,8 @@ int main()
     struct timeval end;
     struct timeval res;
     struct itimerval trigger, disable;
-    trigger.it_value.tv_usec = 100000;
-    trigger.it_value.tv_sec = trigger.it_interval.tv_sec = trigger.it_interval.tv_usec = 0;
+    trigger.it_value.tv_sec = 2;
+    trigger.it_value.tv_usec = trigger.it_interval.tv_sec = trigger.it_interval.tv_usec = 0;
     disable.it_value.tv_usec = disable.it_value.tv_sec = disable.it_interval.tv_sec = disable.it_interval.tv_usec = 0;
     int logjmp = 0;
     struct sigaction action;
@@ -90,26 +90,18 @@ reset:
             syslog(LOG_NOTICE, "attempting to get tags");
             WATCHDOG_GUARD;
             clipper = freefare_get_tags(dev);
-            WATCHDOG_REST;
             if(!clipper) { goto not_valid; }
             if(clipper[0] == NULL) { goto not_valid; }
             syslog(LOG_NOTICE, "attempting desfire_connect");
-            WATCHDOG_GUARD;
             ret = mifare_desfire_connect(clipper[0]);
-            WATCHDOG_REST;
             if(ret == -1) { goto not_valid; }
             syslog(LOG_NOTICE, "attempting to get application IDs");
-            WATCHDOG_GUARD;
             ret = mifare_desfire_get_application_ids(clipper[0], &aids, &j);
-            WATCHDOG_REST;
             if(ret == -1) { goto not_valid; }
             syslog(LOG_NOTICE, "attempting to select application");
-            WATCHDOG_GUARD;
             ret = mifare_desfire_select_application(clipper[0], aids[0]);
-            WATCHDOG_REST;
             if(ret == -1) { goto not_valid; }
             syslog(LOG_NOTICE, "attempting to read clipper data");
-            WATCHDOG_GUARD;
             ret = mifare_desfire_read_data(clipper[0], 8, 1, 4, &clipper_id);
             WATCHDOG_REST;
             if(ret != 4) { goto not_valid; }
@@ -123,11 +115,9 @@ reset:
             success = 1;
 not_valid:
             if(!success) // new more aggressive failure handling
-            {
                 syslog(LOG_NOTICE, "mifare read failed\n");
-            }
-            if(aids) { mifare_desfire_free_application_ids(aids); }
             WATCHDOG_GUARD;
+            if(aids) { mifare_desfire_free_application_ids(aids); }
             if(clipper && clipper != (void *) -1) { freefare_free_tags(clipper); }
             WATCHDOG_REST;
             if(!success)
