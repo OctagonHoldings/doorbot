@@ -5,6 +5,8 @@
 #include<syslog.h>
 #include<unistd.h>
 #include<time.h>
+#include<setjmp.h>
+#include<signal.h>
 
 // libnfc includes
 #include<nfc/nfc.h>
@@ -15,6 +17,12 @@
 
 #define err_chk(cond) if(cond) { goto err; }
 #define BUF_LEN 512
+
+#define WATCHDOG_GUARD setitimer(ITIMER_REAL, &trigger, NULL);
+#define WATCHDOG_REST setitimer(ITIMER_REAL, &disable, NULL);
+
+void freak_out(int i);
+jmp_buf fuck_this_we_are_out;
 
 int main()
 {
@@ -35,7 +43,15 @@ int main()
     struct timeval start;
     struct timeval end;
     struct timeval res;
+    struct itimerval trigger, disable;
+    trigger.it_value.tv_usec = 100000;
+    trigger.it_value.tv_sec = trigger.it_interval.tv_sec = trigger.it_interval.tv_usec = 0;
+    disable.it_value.tv_usec = disable.it_value.tv_sec = disable.it_interval.tv_sec = disable.it_interval.tv_usec = 0;
+    int logjmp = 0;
+    struct sigaction action;
+    action.sa_handler = &freak_out;
 
+    /* Do some init */
     nfc_init(&context);
     dev = nfc_open(context, NULL);
     nfc_initiator_init(dev);
@@ -44,6 +60,16 @@ int main()
     if(!piece) { syslog(LOG_ERR, "Cannot allocate memory"); exit(1); }
     buffer = calloc(BUF_LEN,1); // Should be big enough >_<
     if(!buffer) { syslog(LOG_ERR, "Cannot allocate memory"); exit(1); }
+
+    /* Set up signal handling before setjmp so the signal mask is right */
+    sigaction(SIGALRM, &action, NULL);
+
+    /* Set up watchdog reset point */
+    setjmp(fuck_this_we_are_out);
+    if(logjmp)
+        syslog(LOG_ERR, "WATCHDOG TRIGGERED - reset\n");
+    logjmp = 1;
+
     while(1)
     {
 reset:
@@ -61,17 +87,33 @@ reset:
             MifareDESFireAID * aids = 0;
             clipper = 0;
             clipper_id = 0;
+            syslog(LOG_NOTICE, "attempting to get tags");
+            WATCHDOG_GUARD;
             clipper = freefare_get_tags(dev);
+            WATCHDOG_REST;
             if(!clipper) { goto not_valid; }
             if(clipper[0] == NULL) { goto not_valid; }
+            syslog(LOG_NOTICE, "attempting desfire_connect");
+            WATCHDOG_GUARD;
             ret = mifare_desfire_connect(clipper[0]);
+            WATCHDOG_REST;
             if(ret == -1) { goto not_valid; }
+            syslog(LOG_NOTICE, "attempting to get application IDs");
+            WATCHDOG_GUARD;
             ret = mifare_desfire_get_application_ids(clipper[0], &aids, &j);
+            WATCHDOG_REST;
             if(ret == -1) { goto not_valid; }
+            syslog(LOG_NOTICE, "attempting to select application");
+            WATCHDOG_GUARD;
             ret = mifare_desfire_select_application(clipper[0], aids[0]);
+            WATCHDOG_REST;
             if(ret == -1) { goto not_valid; }
+            syslog(LOG_NOTICE, "attempting to read clipper data");
+            WATCHDOG_GUARD;
             ret = mifare_desfire_read_data(clipper[0], 8, 1, 4, &clipper_id);
+            WATCHDOG_REST;
             if(ret != 4) { goto not_valid; }
+            syslog(LOG_NOTICE, "clipper data returned");
             clipper_id = ntohl(clipper_id);
             if(clipper_id == 0) { goto not_valid; }
             snprintf(buffer, BUF_LEN, "%d", clipper_id);
@@ -80,11 +122,17 @@ reset:
             syslog(LOG_NOTICE, "clipper card successfully read (c%s)\n", buffer);
             success = 1;
 not_valid:
-            if(aids) { mifare_desfire_free_application_ids(aids); }
-            if(clipper && clipper != (void *) -1) { freefare_free_tags(clipper); }
-            if(!success)
+            if(!success) // new more aggressive failure handling
             {
                 syslog(LOG_NOTICE, "mifare read failed\n");
+            }
+            if(aids) { mifare_desfire_free_application_ids(aids); }
+            WATCHDOG_GUARD;
+            if(clipper && clipper != (void *) -1) { freefare_free_tags(clipper); }
+            WATCHDOG_REST;
+            if(!success)
+            {
+                syslog(LOG_NOTICE, "resetting...\n");
                 goto reset;
             }
             success = 0;
@@ -124,4 +172,9 @@ not_valid:
 
 err:
     exit(EXIT_FAILURE);
+}
+
+void freak_out(int i)
+{
+    longjmp(fuck_this_we_are_out, 1);
 }
